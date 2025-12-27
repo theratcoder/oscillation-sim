@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Oscillation Simulation</title>
+        <script src="solver.js"></script>
+        <script src="graphics.js"></script>
+        <script src="main.js"></script>
+        <link rel="stylesheet" href="styles.css">
+    </head>
+    <body>
+        <div id="main">
+            <canvas id="mainCanvas"></canvas>
+            <div id="sidePanel">
+                <div id="controlPanel">
+                    <div id="controlPanelTabs">
+                        <button id="springTabBtn" class="tabBtn">Spring-mass-damper</button>
+                        <button id="LCRTabBtn" class="tabBtn">LCR Circuit</button>
+                    </div>
+                    <div id="controlPanelContents">
+                        <div id="springTab" class="controlPanelContent">
+                            <label for="massInput">Mass (kg): </label>
+                            <input type="number" id="massInput" value="1" step="0.1"><br>
+                            <label for="springConstantInput">Spring Constant (N/m): </label>
+                            <input type="number" id="springConstantInput" value="10" step="0.1"><br>
+                            <label for="dampingCoefficientInput">Damping Coefficient (kg/s): </label>
+                            <input type="number" id="dampingCoefficientInput" value="0.5" step="0.1"><br>
+                            <label for="initialDisplacementInput">Initial Displacement (m): </label>
+                            <input type="number" id="initialDisplacementInput" value="1" step="0.1"><br>
+                        </div>
+                        <div id="LCRTab" class="controlPanelContent" style="display:none;">
+                            <label for="inductanceInput">Inductance (H): </label>
+                            <input type="number" id="inductanceInput" value="1" step="0.1"><br>
+                            <label for="capacitanceInput">Capacitance (F): </label>
+                            <input type="number" id="capacitanceInput" value="0.1" step="0.01"><br>
+                            <label for="resistanceInput">Resistance (Ω): </label>
+                            <input type="number" id="resistanceInput" value="5" step="0.1"><br>
+                            <label for="initialChargeInput">Initial Charge (C): </label>
+                            <input type="number" id="initialChargeInput" value="1" step="0.1"><br>
+                        </div>
+                    </div>
+                    <button id="startBtn">Start Simulation</button>
+                    <button id="resetBtn">Reset Simulation</button>
+                </div>
+                <div id="graphPanel">
+                    <canvas id="positionGraphCanvas"></canvas>
+                    <canvas id="velocityGraphCanvas"></canvas>
+                    <canvas id="accelerationGraphCanvas"></canvas>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
