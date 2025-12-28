@@ -28,14 +28,14 @@ function drawMSDSystem(ctx, position) {
     ctx.strokeStyle = '#000';
     ctx.lineWidth = 4;
     ctx.beginPath();
-    ctx.moveTo(springAnchorDim.width, y + springAnchorDim.height/2);
+    ctx.moveTo(springAnchorDim.width, y);
     const springLength = x - springAnchorDim.width - massDim.width/2;
     for (let i = 0; i < springCoils; i++) {
         const coilX = springAnchorDim.width + (springLength / springCoils) * (i + 0.5);
-        const coilY = y + springAnchorDim.height/2 + (i % 2 === 0 ? coilWidth : -coilWidth);
+        const coilY = y + (i % 2 === 0 ? coilWidth : -coilWidth);
         ctx.lineTo(coilX, coilY);
     }
-    ctx.lineTo(x, y);
+    ctx.lineTo(x - massDim.width/2, y);
     ctx.stroke();
 
     ctx.fillStyle = '#00f';

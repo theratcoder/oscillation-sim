@@ -15,19 +15,58 @@
             <div id="sidePanel">
                 <div id="controlPanel">
                     <div id="controlPanelTabs">
-                        <button id="springTabBtn" class="tabBtn">Spring-mass-damper</button>
+                        <button id="MSDTabBtn" class="tabBtn">Spring-mass-damper</button>
                         <button id="LCRTabBtn" class="tabBtn">LCR Circuit</button>
                     </div>
                     <div id="controlPanelContents">
-                        <div id="springTab" class="controlPanelContent">
-                            <label for="massInput">Mass (kg): </label>
-                            <input type="number" id="massInput" value="1" step="0.1"><br>
-                            <label for="springConstantInput">Spring Constant (N/m): </label>
-                            <input type="number" id="springConstantInput" value="10" step="0.1"><br>
-                            <label for="dampingCoefficientInput">Damping Coefficient (kg/s): </label>
-                            <input type="number" id="dampingCoefficientInput" value="0.5" step="0.1"><br>
-                            <label for="initialDisplacementInput">Initial Displacement (m): </label>
-                            <input type="number" id="initialDisplacementInput" value="1" step="0.1"><br>
+                        <div id="MSDTab" class="controlPanelContent">
+                            <select id="MSDTabSelect">
+                                <option value="basic">Basic parameters</option>
+                                <option value="advanced">Material properties</option>
+                            </select>
+                            <hr>
+                            <div id="MSDBasicTab">
+                                <label for="massInputBasic">Mass (kg): </label>
+                                <input type="number" id="massInputBasic" value="1" step="0.1"><br>
+                                <label for="springConstantInputBasic">Spring Constant (N/m): </label>
+                                <input type="number" id="springConstantInputBasic" value="10" step="0.1"><br>
+                                <label for="dampingCoefficientInputBasic">Damping Coefficient (kg/s): </label>
+                                <input type="number" id="dampingCoefficientInputBasic" value="0.5" step="0.1"><br>
+                                <label for="initialDisplacementInputBasic">Initial Displacement (m): </label>
+                                <input type="number" id="initialDisplacementInputBasic" value="1" step="0.1"><br>
+                            </div>
+                            <div id="MSDAdvancedTab" style="display:none;">
+                                <label for="massInputAdvanced">Mass (kg): </label>
+                                <input type="number" id="massInputAdvanced" value="1" step="0.1"><br>
+                                <label for="elasticModulusInputAdvanced">Elastic modulus (N/m²): </label>
+                                <input type="number" id="elasticModulusInputAdvanced" value="10" step="0.1"><br>
+                                <label for="crossSectionalAreaInputAdvanced">Cross-sectional area (m²): </label>
+                                <input type="number" id="crossSectionalAreaInputAdvanced" value="0.01" step="0.001"><br>
+                                <label for="lengthInputAdvanced">Natural length of spring (m): </label>
+                                <input type="number" id="lengthInputAdvanced" value="1" step="0.1"><br>
+                                <label for="dampingCoefficientInputAdvanced">Damping Coefficient (kg/s): </label>
+                                <input type="number" id="dampingCoefficientInputAdvanced" value="0.5" step="0.1"><br>
+                                <label for="initialDisplacementInputAdvanced">Initial Displacement (m): </label>
+                                <input type="number" id="initialDisplacementInputAdvanced" value="1" step="0.1"><br>
+                            </div>
+                            <label for="forcingTypeSelect">Forcing: </label>
+                            <select id="forcingTypeSelect">
+                                <option value="none" selected>None</option>
+                                <option value="sin">Sinusoidal</option>
+                                <option value="step">Step</option>
+                            </select>
+                            <div id="sinForcedTab" style="display:none;">
+                                <label for="sinForceAmplitudeInput">Force Amplitude (N): </label>
+                                <input type="number" id="sinForceAmplitudeInput" value="10" step="0.1"><br>
+                                <label for="sinForceFrequencyInput">Force Frequency (Hz): </label>
+                                <input type="number" id="sinForceFrequencyInput" value="1" step="0.1"><br>
+                                <label for="sinForcePhaseInput">Force Phase (degrees): </label>
+                                <input type="number" id="sinForcePhaseInput" value="0" step="1"><br>
+                            </div>
+                            <div id="stepForcedTab" style="display:none;">
+                                <label for="stepForceMagnitudeInput">Step Force (N): </label>
+                                <input type="number" id="stepForceMagnitudeInput" value="10" step="0.1"><br>
+                            </div>
                         </div>
                         <div id="LCRTab" class="controlPanelContent" style="display:none;">
                             <label for="inductanceInput">Inductance (H): </label>
@@ -40,12 +79,18 @@
                             <input type="number" id="initialChargeInput" value="1" step="0.1"><br>
                         </div>
                     </div>
+                    <hr>
                     <button id="startBtn">Start Simulation</button>
+                    <button id="stopBtn">Stop Simulation</button>
                     <button id="resetBtn">Reset Simulation</button>
+                    <hr>
                 </div>
                 <div id="graphPanel">
+                    <span><strong>Position</strong></span>
                     <canvas id="positionGraphCanvas"></canvas>
+                    <span><strong>Velocity</strong></span>
                     <canvas id="velocityGraphCanvas"></canvas>
+                    <span><strong>Acceleration</strong></span>
                     <canvas id="accelerationGraphCanvas"></canvas>
                 </div>
             </div>
