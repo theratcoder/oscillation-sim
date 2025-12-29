@@ -42,6 +42,71 @@ function drawMSDSystem(ctx, position) {
     ctx.fillRect(x - massDim.width/2, y - massDim.height/2, massDim.width, massDim.height);
 }
 
+function drawLCRCircuit(ctx) {
+    const width = ctx.canvas.width / (window.devicePixelRatio || 1);
+    const height = ctx.canvas.height / (window.devicePixelRatio || 1);
+    ctx.clearRect(0, 0, width, height);
+
+    const circuitX = width * 0.2;
+    const circuitY = height * 0.3;
+    const circuitWidth = width * 0.6;
+    const circuitHeight = height * 0.4;
+
+    ctx.strokeStyle = '#000';
+    ctx.lineWidth = 2;
+    ctx.fillStyle = '#fff';
+
+    // Inductor (left side)
+    const indHeight = 60;
+    const indX = circuitX;
+    const indY = circuitY + circuitHeight * 0.5 + indHeight/2;
+    ctx.beginPath();
+    for (let i = 0; i < 4; i++) {
+        ctx.arc(indX, indY - i * indHeight/4, 7, Math.PI/2, 3*Math.PI/2);
+    }
+    ctx.stroke();
+
+    // Resistor (top)
+    const resWidth = 30;
+    const resHeight = 15;
+    const resX = circuitX + circuitWidth * 0.5 - resWidth / 2;
+    const resY = circuitY - resHeight/2;
+    ctx.strokeRect(resX, resY, resWidth, resHeight);
+
+    // Capacitor (right side)
+    const capX = circuitX + circuitWidth;
+    const capY = circuitY + circuitHeight * 0.5;
+    const capGap = 10;
+    ctx.beginPath();
+    ctx.moveTo(capX - 15, capY);
+    ctx.lineTo(capX + 15, capY);
+    ctx.moveTo(capX - 15, capY + capGap);
+    ctx.lineTo(capX + 15, capY + capGap);
+    ctx.stroke();
+
+    // Connecting wires
+    ctx.beginPath();
+    ctx.moveTo(circuitX, circuitY);
+    ctx.lineTo(resX, circuitY);
+    ctx.moveTo(resX + resWidth, circuitY);
+    ctx.lineTo(circuitX + circuitWidth, circuitY);
+    ctx.lineTo(circuitX + circuitWidth, capY);
+    ctx.moveTo(circuitX + circuitWidth, capY + capGap);
+    ctx.lineTo(circuitX + circuitWidth, circuitY + circuitHeight);
+    ctx.lineTo(circuitX, circuitY + circuitHeight);
+    ctx.lineTo(circuitX, indY + indHeight/8);
+    ctx.moveTo(circuitX, indY - indHeight + indHeight/8);
+    ctx.lineTo(circuitX, circuitY);
+    ctx.stroke();
+
+    // Labels
+    ctx.fillStyle = '#000';
+    ctx.font = '12px Arial';
+    ctx.fillText('L', indX - 20, indY - indHeight/2);
+    ctx.fillText('R', resX + resWidth/2, resY - 5);
+    ctx.fillText('C', capX + 20, capY + capGap/2);
+}
+
 function plot(ctx, xMin, xMax, yMin, yMax, x, y) {
     const width = ctx.canvas.width / (window.devicePixelRatio || 1);
     const height = ctx.canvas.height / (window.devicePixelRatio || 1);

@@ -61,7 +61,7 @@ function getSHMParameters(args) {
         params.R = args.s0;
     }
     // LCR circuit
-    else if ('L' in args && 'C' in args) {
+    else if ('L' in args && 'C' in args && 'V0' in args) {
         params.omega = 1 / Math.sqrt(args.L * args.C);
         if ('R' in args) {
             params.zeta = args.R / (2 * Math.sqrt(args.L / args.C));

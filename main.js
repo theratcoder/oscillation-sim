@@ -6,6 +6,9 @@ var mainCtx;
 var positionGraphCtx;
 var velocityGraphCtx;
 var accelerationGraphCtx;
+var positionGraphLabel;
+var velocityGraphLabel;
+var accelerationGraphLabel;
 var massInput;
 var kInput;
 var cInput;
@@ -38,6 +41,12 @@ var stepForceMagnitude = 0;
 var positionData = [];
 var velocityData = [];
 var accelerationData = [];
+var maxPos = 0;
+var minPos = 0;
+var maxVel = 0;
+var minVel = 0;
+var maxAcc = 0;
+var minAcc = 0;
 var timer = null;
 
 function updateMSD() {
@@ -51,7 +60,7 @@ function updateMSD() {
         acc += getSinForcedResponseAcceleration(SHMParams.omega, SHMParams.zeta, sinForceAmplitude, mass, sinForceNaturalFrequency, sinForcePhase, time);
     }
     else if (forcingType === "step") {
-        pos += getConstantForcedResponsePosition(SHMParams.omega, SHMParams.zeta, stepForceMagnitude);
+        pos += getConstantForcedResponsePosition(SHMParams.omega, SHMParams.zeta, stepForceMagnitude, mass);
     }
 
     positionData.push(pos);
@@ -60,10 +69,59 @@ function updateMSD() {
 
     drawMSDSystem(mainCtx, pos);
 
-    plot(positionGraphCtx, 0, time, -SHMParams.R*1.2, SHMParams.R*1.2, equallySpacedArray(0, time, positionData.length), positionData);
-    plot(velocityGraphCtx, 0, time, -SHMParams.omega*SHMParams.R*1.2, SHMParams.omega*SHMParams.R*1.2, equallySpacedArray(0, time, velocityData.length), velocityData);
-    plot(accelerationGraphCtx, 0, time, -SHMParams.omega*SHMParams.omega*SHMParams.R*1.2, SHMParams.omega*SHMParams.omega*SHMParams.R*1.2, equallySpacedArray(0, time, accelerationData.length), accelerationData);
+    if (pos > maxPos) maxPos = pos;
+    if (pos < minPos) minPos = pos;
+    if (vel > maxVel) maxVel = vel;
+    if (vel < minVel) minVel = vel;
+    if (acc > maxAcc) maxAcc = acc;
+    if (acc < minAcc) minAcc = acc;
 
+    const posRange = maxPos - minPos;
+    const lowerPosBound = minPos - 0.1 * posRange;
+    const upperPosBound = maxPos + 0.1 * posRange;
+    const velRange = maxVel - minVel;
+    const lowerVelBound = minVel - 0.1 * velRange;
+    const upperVelBound = maxVel + 0.1 * velRange;
+    const accRange = maxAcc - minAcc;
+    const lowerAccBound = minAcc - 0.1 * accRange;
+    const upperAccBound = maxAcc + 0.1 * accRange;
+
+    plot(positionGraphCtx, 0, time, lowerPosBound, upperPosBound, equallySpacedArray(0, time, positionData.length), positionData);
+    plot(velocityGraphCtx, 0, time, lowerVelBound, upperVelBound, equallySpacedArray(0, time, velocityData.length), velocityData);
+    plot(accelerationGraphCtx, 0, time, lowerAccBound, upperAccBound, equallySpacedArray(0, time, accelerationData.length), accelerationData);
+
+    time += 1/FPS;
+}
+
+function updateLCR() {
+    const charge = getDampedSHMPosition(SHMParams.omega, SHMParams.zeta, SHMParams.R, time);
+    const current = getDampedSHMVelocity(SHMParams.omega, SHMParams.zeta, SHMParams.R, time);
+    const dCurrent = getDampedSHMAcceleration(SHMParams.omega, SHMParams.zeta, SHMParams.R, time);
+
+    positionData.push(charge);
+    velocityData.push(current);
+    accelerationData.push(dCurrent);
+
+    if (charge > maxPos) maxPos = charge;
+    if (charge < minPos) minPos = charge;
+    if (current > maxVel) maxVel = current;
+    if (current < minVel) minVel = current;
+    if (dCurrent > maxAcc) maxAcc = dCurrent;
+    if (dCurrent < minAcc) minAcc = dCurrent;
+
+    const chargeRange = maxPos - minPos;
+    const lowerChargeBound = minPos - 0.1 * chargeRange;
+    const upperChargeBound = maxPos + 0.1 * chargeRange;
+    const currentRange = maxVel - minVel;
+    const lowerCurrentBound = minVel - 0.1 * currentRange;
+    const upperCurrentBound = maxVel + 0.1 * currentRange;
+    const dCurrentRange = maxAcc - minAcc;
+    const lowerdCurrentBound = minAcc - 0.1 * dCurrentRange;
+    const upperdCurrentBound = maxAcc + 0.1 * dCurrentRange;
+
+    plot(positionGraphCtx, 0, time, lowerChargeBound, upperChargeBound, equallySpacedArray(0, time, positionData.length), positionData);
+    plot(velocityGraphCtx, 0, time, lowerCurrentBound, upperCurrentBound, equallySpacedArray(0, time, velocityData.length), velocityData);
+    plot(accelerationGraphCtx, 0, time, lowerdCurrentBound, upperdCurrentBound, equallySpacedArray(0, time, accelerationData.length), accelerationData);
     time += 1/FPS;
 }
 
@@ -72,6 +130,9 @@ window.onload = () => {
     positionGraphCanvas = document.querySelector('#positionGraphCanvas');
     velocityGraphCanvas = document.querySelector('#velocityGraphCanvas');
     accelerationGraphCanvas = document.querySelector('#accelerationGraphCanvas');
+    positionGraphLabel = document.querySelector('#positionGraphLabel');
+    velocityGraphLabel = document.querySelector('#velocityGraphLabel');
+    accelerationGraphLabel = document.querySelector('#accelerationGraphLabel');
     startBtn = document.querySelector('#startBtn');
     stopBtn = document.querySelector('#stopBtn');
     resetBtn = document.querySelector('#resetBtn');
@@ -93,11 +154,26 @@ window.onload = () => {
 
     simType = new URLSearchParams(window.location.search).get('simtype') || "MSD";
 
+    if (simType === "LCR") {
+        MSDTab.style.display = "none";
+        LCRTab.style.display = "block";
+        positionGraphLabel.textContent = "Charge in capactitor (C)";
+        velocityGraphLabel.textContent = "Current (A)";
+        accelerationGraphLabel.textContent = "Rate of change of current (A/s)";
+    }
+
     MSDTabBtn.onclick = () => {
         if (simType === "MSD") return;
         simType = "MSD";
         MSDTab.style.display = "block";
         LCRTab.style.display = "none";
+        positionGraphLabel.textContent = "Position (m)";
+        velocityGraphLabel.textContent = "Velocity (m/s)";
+        accelerationGraphLabel.textContent = "Acceleration (m/s²)";
+
+        let params = new URLSearchParams(window.location.search);
+        params.set('simtype', 'MSD');
+        window.history.replaceState({}, '', `${window.location.pathname}?${params}`);
     }
 
     LCRTabBtn.onclick = () => {
@@ -105,6 +181,13 @@ window.onload = () => {
         simType = "LCR";
         MSDTab.style.display = "none";
         LCRTab.style.display = "block";
+        positionGraphLabel.textContent = "Charge in capactitor (C)";
+        velocityGraphLabel.textContent = "Current (A)";
+        accelerationGraphLabel.textContent = "Rate of change of current (A/s)";
+
+        let params = new URLSearchParams(window.location.search);
+        params.set('simtype', 'LCR');
+        window.history.replaceState({}, '', `${window.location.pathname}?${params}`);
     }
 
     MSDTabSelect.onchange = () => {
@@ -169,7 +252,15 @@ window.onload = () => {
             timer = setInterval(updateMSD, 1000 / FPS);
         }
         else {
-            // TODO: LCR simulation
+            const L = parseFloat(document.querySelector("#inductanceInput").value);
+            const C = parseFloat(document.querySelector("#capacitanceInput").value);
+            const R = parseFloat(document.querySelector("#resistanceInput").value);
+            const V0 = parseFloat(document.querySelector("#initialVoltageInput").value);
+            SHMParams = getSHMParameters({L: L, C: C, R: R, V0: V0});
+
+            drawLCRCircuit(mainCtx);
+
+            timer = setInterval(updateLCR, 1000 / FPS);
         }
     }
 
@@ -185,7 +276,20 @@ window.onload = () => {
         positionData = [];
         velocityData = [];
         accelerationData = [];
-        drawMSDSystem(mainCtx, 0);
+        maxPos = 0;
+        minPos = 0;
+        maxVel = 0;
+        minVel = 0;
+        maxAcc = 0;
+        minAcc = 0;
+
+        if (simType === "MSD") {
+            drawMSDSystem(mainCtx, 0);
+        }
+        else {
+            drawLCRCircuit(mainCtx);
+        }
+
         plot(positionGraphCtx, 0, 1, -1, 1, [], []);
         plot(velocityGraphCtx, 0, 1, -1, 1, [], []);
         plot(accelerationGraphCtx, 0, 1, -1, 1, [], []);

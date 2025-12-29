@@ -75,8 +75,8 @@
                             <input type="number" id="capacitanceInput" value="0.1" step="0.01"><br>
                             <label for="resistanceInput">Resistance (Ω): </label>
                             <input type="number" id="resistanceInput" value="5" step="0.1"><br>
-                            <label for="initialChargeInput">Initial Charge (C): </label>
-                            <input type="number" id="initialChargeInput" value="1" step="0.1"><br>
+                            <label for="initialVoltageInput">Initial voltage (V): </label>
+                            <input type="number" id="initialVoltageInput" value="1" step="0.1"><br>
                         </div>
                     </div>
                     <hr>
@@ -86,11 +86,11 @@
                     <hr>
                 </div>
                 <div id="graphPanel">
-                    <span><strong>Position</strong></span>
+                    <span><strong id="positionGraphLabel">Position (m)</strong></span>
                     <canvas id="positionGraphCanvas"></canvas>
-                    <span><strong>Velocity</strong></span>
+                    <span><strong id="velocityGraphLabel">Velocity (m/s)</strong></span>
                     <canvas id="velocityGraphCanvas"></canvas>
-                    <span><strong>Acceleration</strong></span>
+                    <span><strong id="accelerationGraphLabel">Acceleration (m/s²)</strong></span>
                     <canvas id="accelerationGraphCanvas"></canvas>
                 </div>
             </div>
