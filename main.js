@@ -16,6 +16,7 @@ var s0Input;
 var startBtn;
 var stopBtn;
 var resetBtn;
+var downloadDataBtn;
 var MSDTabBtn;
 var LCRTabBtn;
 var MSDTab;
@@ -136,6 +137,7 @@ window.onload = () => {
     startBtn = document.querySelector('#startBtn');
     stopBtn = document.querySelector('#stopBtn');
     resetBtn = document.querySelector('#resetBtn');
+    downloadDataBtn = document.querySelector('#downloadDataBtn');
     MSDTabBtn = document.querySelector('#MSDTabBtn');
     LCRTabBtn = document.querySelector('#LCRTabBtn');
     MSDTab = document.querySelector('#MSDTab');
@@ -222,6 +224,8 @@ window.onload = () => {
     }
 
     startBtn.onclick = () => {
+        if (timer) return;
+        
         if (simType === "MSD") {
             if (MSDSimMode === "basic") {
                 mass = parseFloat(document.querySelector("#massInputBasic").value);
@@ -272,6 +276,11 @@ window.onload = () => {
     }
 
     resetBtn.onclick = () => {
+        if (timer) {
+            clearInterval(timer);
+            timer = null;
+        }
+
         time = 0;
         positionData = [];
         velocityData = [];
@@ -293,5 +302,22 @@ window.onload = () => {
         plot(positionGraphCtx, 0, 1, -1, 1, [], []);
         plot(velocityGraphCtx, 0, 1, -1, 1, [], []);
         plot(accelerationGraphCtx, 0, 1, -1, 1, [], []);
+    }
+
+    downloadDataBtn.onclick = () => {
+        if (timer) {
+            alert("Please stop the simulation before downloading data.");
+            return;
+        }
+        if (positionData.length === 0) {
+            alert("No data to download.");
+            return;
+        }
+
+        let colNames = ["Time (s)", "Position (m)", "Velocity (m/s)", "Acceleration (m/s²)"];
+        if (simType === "LCR") {
+            colNames = ["Time (s)", "Charge (C)", "Current (A)", "Rate of change of current (A/s)"];
+        }
+        toCSV(colNames, [equallySpacedArray(0, time, positionData.length), positionData, velocityData, accelerationData]);
     }
 }

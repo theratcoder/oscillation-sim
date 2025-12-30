@@ -104,3 +104,23 @@ function equallySpacedArray(start, end, numPoints) {
     }
     return arr;
 }
+
+function toCSV(colNames, dataArrays) {
+    let csvContent = colNames.join(",") + "\n";
+    const numRows = dataArrays[0].length;
+    for (let i = 0; i < numRows; i++) {
+        const row = dataArrays.map(arr => arr[i]);
+        csvContent += row.join(",") + "\n";
+    }
+    
+    let element = document.createElement('a');
+    element.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent(csvContent));
+    element.setAttribute("download", "simulation_data.csv");
+
+    element.style.display = "none";
+    document.body.appendChild(element);
+
+    element.click();
+
+    document.body.removeChild(element);
+}
